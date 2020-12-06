@@ -12,14 +12,30 @@ pub struct Password<'a> {
 }
 
 impl<'a> Password<'a> {
-    pub fn valid(&self) -> bool {
+    pub fn valid_a(&self) -> bool {
         let mut c_count = 0;
+
         for c in self.pass.chars() {
             if c == self.policy.c {
                 c_count += 1;
             }
         }
+
         return c_count >= self.policy.min && c_count <= self.policy.max;
+    }
+
+    pub fn valid_b(&self) -> bool {
+        let pol = &self.policy;
+        let bytes = self.pass.as_bytes();
+
+        if pol.max as usize > self.pass.len() {
+            false
+        } else {
+            let first_c = bytes[(pol.min - 1) as usize] as char;
+            let last_c = bytes[(pol.max - 1) as usize] as char;
+
+            return pol.c != first_c && pol.c == last_c || pol.c == first_c && pol.c != last_c;
+        }
     }
 }
 
